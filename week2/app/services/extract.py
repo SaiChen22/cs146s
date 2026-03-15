@@ -5,10 +5,17 @@ import re
 from typing import List
 import json
 from typing import Any
-from ollama import chat
-from dotenv import load_dotenv
+try:
+    from ollama import chat
+except ImportError:
+    chat = None
+try:
+    from dotenv import load_dotenv
+except ImportError:
+    load_dotenv = None
 
-load_dotenv()
+if load_dotenv is not None:
+    load_dotenv()
 
 BULLET_PREFIX_PATTERN = re.compile(r"^\s*([-*•]|\d+\.)\s+")
 KEYWORD_PREFIXES = (
@@ -85,3 +92,71 @@ def _looks_imperative(sentence: str) -> bool:
         "investigate",
     }
     return first.lower() in imperative_starters
+
+def extract_action_items_llm(text: str) -> List[str]:
+    normalized_text = text.strip()
+    if not normalized_text:
+        return []
+
+    if chat is None:
+        return []
+
+    model = os.getenv("OLLAMA_MODEL", "llama3.1:8b")
+    system_prompt = (
+        "You extract actionable tasks from meeting notes. "
+        "Return only concrete action items as short strings."
+    )
+    user_prompt = (
+        "Extract action items from the following text. "
+        "Return a JSON array of strings only.\n\n"
+        f"Text:\n{normalized_text}"
+    )
+
+    try:
+        response: Any = chat(
+            model=model,
+            messages=[
+                {"role": "system", "content": system_prompt},
+                {"role": "user", "content": user_prompt},
+            ],
+            format={"type": "array", "items": {"type": "string"}},
+        )
+    except Exception:
+        return []
+
+    content: Any = ""
+    if isinstance(response, dict):
+        message = response.get("message", {})
+        if isinstance(message, dict):
+            content = message.get("content", "")
+    elif hasattr(response, "message"):
+        message = getattr(response, "message")
+        if isinstance(message, dict):
+            content = message.get("content", "")
+        else:
+            content = getattr(message, "content", "")
+
+    parsed_items: List[str] = []
+    if isinstance(content, list):
+        parsed_items = [str(item).strip() for item in content if str(item).strip()]
+    elif isinstance(content, str):
+        try:
+            loaded = json.loads(content)
+            if isinstance(loaded, list):
+                parsed_items = [str(item).strip() for item in loaded if str(item).strip()]
+        except json.JSONDecodeError:
+            pass
+
+    if not parsed_items:
+        return []
+
+    seen: set[str] = set()
+    unique: List[str] = []
+    for item in parsed_items:
+        lowered = item.lower()
+        if lowered in seen:
+            continue
+        seen.add(lowered)
+        unique.append(item)
+    return unique
+

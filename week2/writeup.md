@@ -22,12 +22,25 @@ For each exercise, please include what prompts you used to generate the answer, 
 ### Exercise 1: Scaffold a New Feature
 Prompt: 
 ```
-TODO
+Implement extract_action_items_llm in week2/app/services/extract.py.
+Use Ollama's structured output feature (format parameter) to make the LLM return
+a JSON array of action item strings. The function should:
+- Return [] for empty input
+- Return [] if the ollama chat import is unavailable
+- Call ollama.chat with a system prompt and user prompt, passing
+  format={"type": "array", "items": {"type": "string"}}
+- Parse the response content as a JSON list of strings
+- Deduplicate results while preserving order
+- Return [] on any exception (pure LLM, no heuristic fallback)
+Also add a new POST endpoint /action-items/extract-llm in the router
+and an "Extract LLM" button in the frontend that calls it.
 ``` 
 
 Generated Code Snippets:
 ```
-TODO: List all modified code files with the relevant line numbers.
+week2/app/services/extract.py  lines 96–161  (extract_action_items_llm function)
+week2/app/routers/action_items.py  lines 30–43  (POST /action-items/extract-llm endpoint)
+week2/frontend/index.html  lines 29, 45–58  (Extract LLM button + runExtract helper)
 ```
 
 ### Exercise 2: Add Unit Tests
