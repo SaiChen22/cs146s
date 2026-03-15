@@ -114,12 +114,34 @@ week2/app/main.py  lines 1–36
 ### Exercise 4: Use Agentic Mode to Automate a Small Task
 Prompt: 
 ```
-TODO
+Implement two small agentic tasks in week2:
+
+1) LLM extraction flow:
+- Add a new backend endpoint POST /action-items/extract-llm that uses
+  extract_action_items_llm and returns the same response shape as /action-items/extract.
+- Update the frontend with an "Extract LLM" button that calls the new endpoint.
+
+2) Notes listing flow:
+- Expose/verify a GET /notes endpoint that returns all saved notes.
+- Update frontend with a "List Notes" button that fetches /notes and renders id,
+  created_at, and content.
+
+Keep all changes minimal and consistent with the existing raw HTML + FastAPI style.
 ``` 
 
 Generated Code Snippets:
 ```
-TODO: List all modified code files with the relevant line numbers.
+week2/app/routers/action_items.py  lines 33–40
+  - Added/used POST /action-items/extract-llm endpoint flow for LLM extraction.
+
+week2/app/routers/notes.py  lines 23–27
+  - Added/verified GET /notes endpoint returning all notes.
+
+week2/frontend/index.html  lines 28–29, 32, 37–40, 81–83, 85–106
+  - Added "List Notes" button and notes container.
+  - Added frontend loadNotes() logic to fetch /notes and render results.
+  - Hooked button click handler for /notes listing.
+  - Added "Extract LLM" button handler using /action-items/extract-llm.
 ```
 
 

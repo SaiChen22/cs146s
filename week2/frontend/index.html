@@ -25,15 +25,19 @@
       <label class="row"><input id="save_note" type="checkbox" checked /> Save as note</label>
       <button id="extract">Extract</button>
       <button id="extract_llm">Extract LLM</button>
+      <button id="list_notes">List Notes</button>
     </div>
 
     <div class="items" id="items"></div>
+    <div class="items" id="notes"></div>
 
     <script>
       const $ = (sel) => document.querySelector(sel);
       const itemsEl = $('#items');
+      const notesEl = $('#notes');
       const extractBtn = $('#extract');
       const extractLlmBtn = $('#extract_llm');
+      const listNotesBtn = $('#list_notes');
 
       async function runExtract(endpoint, loadingLabel) {
         const text = $('#text').value;
@@ -76,6 +80,29 @@
 
       extractLlmBtn.addEventListener('click', async () => {
         await runExtract('/action-items/extract-llm', 'Extracting with LLM...');
+      });
+
+      async function loadNotes() {
+        notesEl.textContent = 'Loading notes...';
+        try {
+          const res = await fetch('/notes');
+          if (!res.ok) throw new Error('Request failed');
+          const notes = await res.json();
+          if (!Array.isArray(notes) || notes.length === 0) {
+            notesEl.innerHTML = '<p class="muted">No notes found.</p>';
+            return;
+          }
+          notesEl.innerHTML = notes.map(note => (
+            `<div class="item"><strong>#${note.id}</strong> <span class="muted">${note.created_at}</span> <span>${note.content}</span></div>`
+          )).join('');
+        } catch (err) {
+          console.error(err);
+          notesEl.textContent = 'Error loading notes';
+        }
+      }
+
+      listNotesBtn.addEventListener('click', async () => {
+        await loadNotes();
       });
 
     </script>
