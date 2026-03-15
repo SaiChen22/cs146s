@@ -148,12 +148,26 @@ week2/frontend/index.html  lines 28–29, 32, 37–40, 81–83, 85–106
 ### Exercise 5: Generate a README from the Codebase
 Prompt: 
 ```
-TODO
+Analyze the week2 codebase and generate a complete README.md in week2/README.md.
+
+Requirements:
+- Include a project overview
+- Explain setup and run instructions
+- Document all API endpoints and functionality
+- Include testing instructions (unit tests + optional live Ollama integration test)
+- Keep docs aligned with the actual implementation:
+  FastAPI routers, SQLite db path, heuristic + LLM extraction, frontend buttons
+  (Extract, Extract LLM, List Notes), and done-status update flow.
 ``` 
 
 Generated Code Snippets:
 ```
-TODO: List all modified code files with the relevant line numbers.
+week2/README.md  lines 1–99
+  - Added project overview and architecture summary.
+  - Added setup instructions (poetry install, OLLAMA_MODEL, model pull).
+  - Added run instructions for uvicorn app startup.
+  - Added full API endpoint documentation for notes + action-items routes.
+  - Added test commands, including optional live integration test command.
 ```
 
 
