@@ -51,6 +51,14 @@ def test_extract_action_items_llm_returns_empty_on_chat_error(monkeypatch):
 #Write unit tests for extract_action_items_llm() covering multiple inputs (e.g., bullet lists, keyword-prefixed lines, empty input) 
 
 def test_extract_action_items_llm_with_various_inputs(monkeypatch):
+    def fake_chat(*args, **kwargs):
+        return {
+            "message": {
+                "content": '["Prepare release notes", "Call vendor", "Prepare release notes"]'
+            }
+        }
+
+    monkeypatch.setattr("week2.app.services.extract.chat", fake_chat)
 
     # Test with bullet list input
     bullet_list_text = """
@@ -74,3 +82,26 @@ def test_extract_action_items_llm_with_various_inputs(monkeypatch):
     empty_text = "   \n\t"
     items = extract_action_items_llm(empty_text)
     assert items == []
+
+
+@pytest.mark.skipif(
+    os.getenv("RUN_OLLAMA_INTEGRATION_TESTS") != "1",
+    reason="Set RUN_OLLAMA_INTEGRATION_TESTS=1 to run live Ollama integration test",
+)
+def test_extract_action_items_llm_live_integration():
+    text = """
+    Team sync notes:
+    - [ ] Schedule team meeting with design
+    - [ ] Review project proposal draft
+    - [ ] Update onboarding documentation
+    """.strip()
+
+    items = extract_action_items_llm(text)
+
+    assert isinstance(items, list)
+    assert all(isinstance(item, str) for item in items)
+    assert len(items) > 0
+
+    joined = " ".join(item.lower() for item in items)
+    assert "schedule" in joined or "meeting" in joined
+    assert "review" in joined or "proposal" in joined

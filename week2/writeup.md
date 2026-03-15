@@ -74,12 +74,40 @@ week2/tests/test_extract.py  lines 1–80  (all test functions for extract_actio
 ### Exercise 3: Refactor Existing Code for Clarity
 Prompt: 
 ```
-TODO
+Refactor the week2 backend for clarity and API correctness with minimal behavior changes.
+
+Goals:
+1) Introduce explicit Pydantic schemas in app/schemas.py for notes/action-items request and response models.
+2) Replace untyped Dict[str, Any] payload handling in routers with typed schemas.
+3) Add response_model annotations for all endpoints to make API contracts explicit.
+4) Remove duplicated extraction endpoint logic by introducing a shared helper in action_items router.
+5) Improve app lifecycle by moving init_db() out of module import side effects and into FastAPI lifespan startup.
+6) Keep existing endpoint behavior and return shapes compatible with frontend/tests.
+
+Please implement clean, minimal edits across main.py and routers.
 ``` 
 
 Generated/Modified Code Snippets:
 ```
-TODO: List all modified code files with the relevant line numbers. (We anticipate there may be multiple scattered changes here – just produce as comprehensive of a list as you can.)
+week2/app/schemas.py  lines 1–70
+  - Added typed request/response schemas: NoteCreate, NoteResponse, ExtractRequest,
+    ActionItemOut, ExtractResponse, ActionItemDetail, DoneRequest, DoneResponse.
+  - Added field validation for blank content/text.
+
+week2/app/routers/notes.py  lines 1–34
+  - Replaced Dict payload handling with NoteCreate / NoteResponse.
+  - Added response_model typing and status_code=201 for POST /notes.
+  - Added GET /notes list endpoint returning List[NoteResponse].
+
+week2/app/routers/action_items.py  lines 1–61
+  - Replaced Dict payload handling with ExtractRequest / DoneRequest.
+  - Added response_model typing for extract/list/done endpoints.
+  - Added _run_extract(...) shared helper to remove duplication between
+    /extract and /extract-llm.
+
+week2/app/main.py  lines 1–36
+  - Replaced import-time init_db() side effect with FastAPI lifespan startup.
+  - Removed unused imports and simplified initialization flow.
 ```
 
 
