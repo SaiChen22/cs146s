@@ -17,7 +17,6 @@ KEYWORD_PREFIXES = (
     "next:",
 )
 
-
 def _is_action_line(line: str) -> bool:
     stripped = line.strip().lower()
     if not stripped:
@@ -29,7 +28,6 @@ def _is_action_line(line: str) -> bool:
     if "[ ]" in stripped or "[todo]" in stripped:
         return True
     return False
-
 
 def extract_action_items(text: str) -> List[str]:
     lines = text.splitlines()

@@ -8,7 +8,7 @@ load_dotenv()
 NUM_RUNS_TIMES = 5
 
 # TODO: Fill this in!
-YOUR_SYSTEM_PROMPT = ""
+YOUR_SYSTEM_PROMPT = "you are a expert mathematician who can solve modular arithmetic problems. Show your work and reasoning step by step, and give the final answer in the format 'Answer: <number>'."
 
 
 USER_PROMPT = """

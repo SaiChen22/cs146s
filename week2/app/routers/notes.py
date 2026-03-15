@@ -17,6 +17,8 @@ def create_note(payload: Dict[str, Any]) -> Dict[str, Any]:
         raise HTTPException(status_code=400, detail="content is required")
     note_id = db.insert_note(content)
     note = db.get_note(note_id)
+    if note is None:
+        raise HTTPException(status_code=500, detail="failed to retrieve created note")
     return {
         "id": note["id"],
         "content": note["content"],

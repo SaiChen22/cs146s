@@ -54,6 +54,8 @@ def insert_note(content: str) -> int:
         cursor = connection.cursor()
         cursor.execute("INSERT INTO notes (content) VALUES (?)", (content,))
         connection.commit()
+        if cursor.lastrowid is None:
+            raise RuntimeError("Failed to insert note: lastrowid is None")
         return int(cursor.lastrowid)
 
 
@@ -84,7 +86,10 @@ def insert_action_items(items: list[str], note_id: Optional[int] = None) -> list
                 "INSERT INTO action_items (note_id, text) VALUES (?, ?)",
                 (note_id, item),
             )
-            ids.append(int(cursor.lastrowid))
+            if cursor.lastrowid is not None:
+                ids.append(int(cursor.lastrowid))
+            else:
+                raise RuntimeError("Failed to insert action item: lastrowid is None")
         connection.commit()
         return ids
 

@@ -70,7 +70,20 @@ TOOL_REGISTRY: Dict[str, Callable[..., str]] = {
 # ==========================
 
 # TODO: Fill this in!
-YOUR_SYSTEM_PROMPT = ""
+YOUR_SYSTEM_PROMPT = """
+You are a helpful assistant that calls tools to solve problems. 
+When asked to call a tool, you MUST respond with a valid JSON object and NOTHING ELSE.
+
+Available Tool:
+- name: "output_every_func_return_type"
+  description: Returns the return types of all functions in a file.
+  args: {"file_path": "string"} (Use "" to refer to the current file)
+
+Output Format:
+{"tool": "output_every_func_return_type", "args": {"file_path": ""}}
+
+Important: Do not include any explanations, code fences, or extra text. Only output the JSON object.
+"""
 
 
 def resolve_path(p: str) -> str:
@@ -141,6 +154,7 @@ def compute_expected_output() -> str:
 def test_your_prompt(system_prompt: str) -> bool:
     """Run once: require the model to produce a valid tool call; compare tool output to expected."""
     expected = compute_expected_output()
+    print(f"Expected output:\n{expected}\n")
     for _ in range(NUM_RUNS_TIMES):
         try:
             call = run_model_for_tool_call(system_prompt)

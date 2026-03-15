@@ -37,7 +37,15 @@ QUESTION = (
 
 
 # TODO: Fill this in!
-YOUR_SYSTEM_PROMPT = ""
+YOUR_SYSTEM_PROMPT = """You are a helpful programming assistant. 
+I will provide you with a Context (API documentation) and a Question. 
+Your task is to write a Python function based EXACTLY on the API details provided in the Context.
+
+Rules:
+1. Use only the information from the Context.
+2. Output ONLY the Python code block.
+3. Do not include explanations or extra text.
+"""
 
 
 # For this simple example
@@ -56,7 +64,7 @@ def YOUR_CONTEXT_PROVIDER(corpus: List[str]) -> List[str]:
 
     For example, return [] to simulate missing context, or [corpus[0]] to include the API docs.
     """
-    return []
+    return [corpus[0]]  # Provide the API docs as context
 
 
 def make_user_prompt(question: str, context_docs: List[str]) -> str:
