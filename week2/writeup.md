@@ -46,12 +46,29 @@ week2/frontend/index.html  lines 29, 45–58  (Extract LLM button + runExtract h
 ### Exercise 2: Add Unit Tests
 Prompt: 
 ```
-TODO
+Write unit tests for extract_action_items_llm() in week2/tests/test_extract.py
+covering the following cases:
+1. Structured LLM output: monkeypatch chat to return a JSON array with duplicates,
+   assert the function returns a deduplicated list in order.
+2. Empty input: assert extract_action_items_llm returns [] for whitespace-only text
+   without ever calling the LLM.
+3. LLM error / unavailable: monkeypatch chat to raise RuntimeError,
+   assert the function returns [] (pure LLM, no fallback).
+4. Verify chat is actually invoked: capture call_info in the fake_chat closure,
+   assert called=True, correct model name, correct format schema, and
+   system/user message roles.
+5. Various input types (bullet lists, keyword-prefixed lines, empty):
+   monkeypatch chat to return appropriate JSON responses and assert correct output.
 ``` 
 
 Generated Code Snippets:
 ```
-TODO: List all modified code files with the relevant line numbers.
+week2/tests/test_extract.py  lines 1–80  (all test functions for extract_action_items_llm)
+  - test_extract_bullets_and_checkboxes         (line 7)   – existing rule-based test
+  - test_extract_action_items_llm_returns_structured_items (line 22) – LLM output + dedup
+  - test_extract_action_items_llm_handles_empty_text       (line 42) – empty input guard
+  - test_extract_action_items_llm_returns_empty_on_chat_error (line 45) – exception → []
+  - test_extract_action_items_llm_with_various_inputs      (line 54) – bullet/keyword/empty
 ```
 
 ### Exercise 3: Refactor Existing Code for Clarity

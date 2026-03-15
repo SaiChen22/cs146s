@@ -48,51 +48,29 @@ def test_extract_action_items_llm_returns_empty_on_chat_error(monkeypatch):
     assert items == []
 
 
-def test_extract_action_items_llm_integration():
-    items = extract_action_items_llm(
-        """
-        Action items:
-        - [ ] Schedule team meeting
-        - [ ] Review project proposal
-        - [ ] Update documentation
-        """.strip()
-    )
+#Write unit tests for extract_action_items_llm() covering multiple inputs (e.g., bullet lists, keyword-prefixed lines, empty input) 
 
-    items2 = extract_action_items_llm(
-        """
-        Action items:
-        1. Schedule team meeting
-        2. Review project proposal
-        3. Update documentation
-        """.strip()
-    )
+def test_extract_action_items_llm_with_various_inputs(monkeypatch):
 
-    items3 = extract_action_items_llm(
-        """
-        Action items:
-        * Schedule team meeting
-        * Review project proposal
-        * Update documentation
-        """.strip()
-    )
+    # Test with bullet list input
+    bullet_list_text = """
+    - [ ] Prepare release notes
+    - [ ] Call vendor
+    - [ ] Prepare release notes
+    """.strip()
+    items = extract_action_items_llm(bullet_list_text)
+    assert items == ["Prepare release notes", "Call vendor"]
 
-    items4 = extract_action_items_llm(
-        """
-        Action items:
-        - Schedule team meeting
-        - Review project proposal
-        - Update documentation
-        """.strip()
-    )
-    assert "Schedule team meeting" in items
-    assert "Review project proposal" in items
-    assert "Update documentation" in items
-    assert "Schedule team meeting" in items2
-    assert "Review project proposal" in items2
-    assert "Update documentation" in items2
-    assert "Schedule team meeting" in items3
-    assert "Review project proposal" in items3
-    assert "Update documentation" in items3
-    assert "Schedule team meeting" in items4
-    assert "Review project proposal" in items4
-    assert "Update documentation" in items4
+    # Test with keyword-prefixed lines
+    keyword_text = """
+    Action: Prepare release notes
+    Action: Call vendor
+    Action: Prepare release notes
+    """.strip()
+    items = extract_action_items_llm(keyword_text)
+    assert items == ["Prepare release notes", "Call vendor"]
+
+    # Test with empty input
+    empty_text = "   \n\t"
+    items = extract_action_items_llm(empty_text)
+    assert items == []
